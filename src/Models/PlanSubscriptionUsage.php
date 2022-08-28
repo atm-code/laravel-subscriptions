@@ -7,7 +7,6 @@ namespace Rinvex\Subscriptions\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use Rinvex\Support\Traits\ValidatingTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -41,7 +40,6 @@ class PlanSubscriptionUsage extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    use ValidatingTrait;
 
     /**
      * {@inheritdoc}
@@ -65,29 +63,6 @@ class PlanSubscriptionUsage extends Model
     ];
 
     /**
-     * {@inheritdoc}
-     */
-    protected $observables = [
-        'validating',
-        'validated',
-    ];
-
-    /**
-     * The default rules that the model will validate against.
-     *
-     * @var array
-     */
-    protected $rules = [];
-
-    /**
-     * Whether the model should throw a
-     * ValidationException if it fails validation.
-     *
-     * @var bool
-     */
-    protected $throwValidationExceptions = true;
-
-    /**
      * Create a new Eloquent model instance.
      *
      * @param array $attributes
@@ -95,13 +70,6 @@ class PlanSubscriptionUsage extends Model
     public function __construct(array $attributes = [])
     {
         $this->setTable(config('rinvex.subscriptions.tables.plan_subscription_usage'));
-        $this->mergeRules([
-            'subscription_id' => 'required|integer|exists:'.config('rinvex.subscriptions.tables.plan_subscriptions').',id',
-            'feature_id' => 'required|integer|exists:'.config('rinvex.subscriptions.tables.plan_features').',id',
-            'used' => 'required|integer',
-            'valid_until' => 'nullable|date',
-        ]);
-
         parent::__construct($attributes);
     }
 

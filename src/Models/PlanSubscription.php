@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Rinvex\Subscriptions\Models;
 
 use Carbon\Carbon;
-use DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,10 +14,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use LogicException;
 use Rinvex\Subscriptions\Services\Period;
 use Rinvex\Subscriptions\Traits\BelongsToPlan;
-use Rinvex\Support\Traits\HasSlug;
-use Rinvex\Support\Traits\HasTranslations;
-use Rinvex\Support\Traits\ValidatingTrait;
+use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
+use Spatie\Translatable\HasTranslations;
 
 /**
  * Rinvex\Subscriptions\Models\PlanSubscription.
@@ -72,7 +70,6 @@ class PlanSubscription extends Model
     use SoftDeletes;
     use BelongsToPlan;
     use HasTranslations;
-    use ValidatingTrait;
 
     /**
      * {@inheritdoc}
@@ -108,14 +105,6 @@ class PlanSubscription extends Model
     ];
 
     /**
-     * {@inheritdoc}
-     */
-    protected $observables = [
-        'validating',
-        'validated',
-    ];
-
-    /**
      * The attributes that are translatable.
      *
      * @var array
@@ -126,21 +115,6 @@ class PlanSubscription extends Model
     ];
 
     /**
-     * The default rules that the model will validate against.
-     *
-     * @var array
-     */
-    protected $rules = [];
-
-    /**
-     * Whether the model should throw a
-     * ValidationException if it fails validation.
-     *
-     * @var bool
-     */
-    protected $throwValidationExceptions = true;
-
-    /**
      * Create a new Eloquent model instance.
      *
      * @param  array  $attributes
@@ -148,21 +122,6 @@ class PlanSubscription extends Model
     public function __construct(array $attributes = [])
     {
         $this->setTable(config('rinvex.subscriptions.tables.plan_subscriptions'));
-        $this->mergeRules([
-            'name' => 'required|string|strip_tags|max:150',
-            'description' => 'nullable|string|max:32768',
-            'slug' => 'required|alpha_dash|max:150',
-            //'slug' => 'required|alpha_dash|max:150|unique:'.config('rinvex.subscriptions.tables.plan_subscriptions').',slug', // todo by atm
-            'plan_id' => 'required|integer|exists:'.config('rinvex.subscriptions.tables.plans').',id',
-            'subscriber_id' => 'required|integer',
-            'subscriber_type' => 'required|string|strip_tags|max:150',
-            'trial_ends_at' => 'nullable|date',
-            'starts_at' => 'required|date',
-            'ends_at' => 'required|date',
-            'cancels_at' => 'nullable|date',
-            'canceled_at' => 'nullable|date',
-        ]);
-
         parent::__construct($attributes);
     }
 
@@ -172,12 +131,6 @@ class PlanSubscription extends Model
     protected static function boot()
     {
         parent::boot();
-
-        static::validating(function (self $model) {
-            if (!$model->starts_at || !$model->ends_at) {
-                $model->setNewPeriod();
-            }
-        });
 
         static::deleted(function ($subscription) {
             $subscription->usage()->delete();

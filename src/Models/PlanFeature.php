@@ -11,12 +11,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Rinvex\Subscriptions\Services\Period;
 use Rinvex\Subscriptions\Traits\BelongsToPlan;
-use Rinvex\Support\Traits\HasSlug;
-use Rinvex\Support\Traits\HasTranslations;
-use Rinvex\Support\Traits\ValidatingTrait;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
+use Spatie\Translatable\HasTranslations;
 
 /**
  * Rinvex\Subscriptions\Models\PlanFeature.
@@ -60,7 +59,6 @@ class PlanFeature extends Model implements Sortable
     use BelongsToPlan;
     use SortableTrait;
     use HasTranslations;
-    use ValidatingTrait;
 
     /**
      * {@inheritdoc}
@@ -90,14 +88,6 @@ class PlanFeature extends Model implements Sortable
     ];
 
     /**
-     * {@inheritdoc}
-     */
-    protected $observables = [
-        'validating',
-        'validated',
-    ];
-
-    /**
      * The attributes that are translatable.
      *
      * @var array
@@ -117,21 +107,6 @@ class PlanFeature extends Model implements Sortable
     ];
 
     /**
-     * The default rules that the model will validate against.
-     *
-     * @var array
-     */
-    protected $rules = [];
-
-    /**
-     * Whether the model should throw a
-     * ValidationException if it fails validation.
-     *
-     * @var bool
-     */
-    protected $throwValidationExceptions = true;
-
-    /**
      * Create a new Eloquent model instance.
      *
      * @param  array  $attributes
@@ -139,18 +114,6 @@ class PlanFeature extends Model implements Sortable
     public function __construct(array $attributes = [])
     {
         $this->setTable(config('rinvex.subscriptions.tables.plan_features'));
-        $this->mergeRules([
-            'plan_id' => 'required|integer|exists:'.config('rinvex.subscriptions.tables.plans').',id',
-            'slug' => 'required|alpha_dash|max:150',
-            //'slug' => 'required|alpha_dash|max:150|unique:'.config('rinvex.subscriptions.tables.plan_features').',slug',
-            'name' => 'required|string|strip_tags|max:150',
-            'description' => 'nullable|string|max:32768',
-            'value' => 'required|string',
-            'resettable_period' => 'sometimes|integer',
-            'resettable_interval' => 'sometimes|in:hour,day,week,month,year', // todo atm add year
-            'sort_order' => 'nullable|integer|max:100000',
-        ]);
-
         parent::__construct($attributes);
     }
 

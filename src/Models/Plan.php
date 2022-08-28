@@ -8,12 +8,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Rinvex\Support\Traits\HasSlug;
-use Rinvex\Support\Traits\HasTranslations;
-use Rinvex\Support\Traits\ValidatingTrait;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
+use Spatie\Translatable\HasTranslations;
 
 /**
  * Rinvex\Subscriptions\Models\Plan.
@@ -71,11 +70,10 @@ use Spatie\Sluggable\SlugOptions;
 class Plan extends Model implements Sortable
 {
     use HasSlug;
+    use HasTranslations;
     use HasFactory;
     use SoftDeletes;
     use SortableTrait;
-    use HasTranslations;
-    use ValidatingTrait;
 
     /**
      * {@inheritdoc}
@@ -125,14 +123,6 @@ class Plan extends Model implements Sortable
     ];
 
     /**
-     * {@inheritdoc}
-     */
-    protected $observables = [
-        'validating',
-        'validated',
-    ];
-
-    /**
      * The attributes that are translatable.
      *
      * @var array
@@ -152,21 +142,6 @@ class Plan extends Model implements Sortable
     ];
 
     /**
-     * The default rules that the model will validate against.
-     *
-     * @var array
-     */
-    protected ?array $rules = [];
-
-    /**
-     * Whether the model should throw a
-     * ValidationException if it fails validation.
-     *
-     * @var bool
-     */
-    protected bool $throwValidationExceptions = true;
-
-    /**
      * Create a new Eloquent model instance.
      *
      * @param  array  $attributes
@@ -174,28 +149,6 @@ class Plan extends Model implements Sortable
     public function __construct(array $attributes = [])
     {
         $this->setTable(config('rinvex.subscriptions.tables.plans'));
-        $this->mergeRules([
-            'slug' => 'required|alpha_dash|max:150',
-            //'slug' => 'required|alpha_dash|max:150|unique:'.config('rinvex.subscriptions.tables.plans').',slug',// todo by atm why unique?
-            'name' => 'required|string|strip_tags|max:150',
-            'description' => 'nullable|string|max:32768',
-            'is_active' => 'sometimes|boolean',
-            'price' => 'required|numeric',
-            'signup_fee' => 'required|numeric',
-            'currency' => 'required|alpha|size:3',
-            'trial_period' => 'sometimes|integer|max:100000',
-            'trial_interval' => 'sometimes|in:hour,day,week,month,year',// todo by ATM added year interval
-            'invoice_period' => 'sometimes|integer|max:100000',
-            'invoice_interval' => 'sometimes|in:hour,day,week,month,year',// todo by ATM added year interval
-            'grace_period' => 'sometimes|integer|max:100000',
-            'grace_interval' => 'sometimes|in:hour,day,week,month,year',// todo by ATM added year interval
-            'sort_order' => 'nullable|integer|max:100000',
-            'prorate_day' => 'nullable|integer|max:150',
-            'prorate_period' => 'nullable|integer|max:150',
-            'prorate_extend_due' => 'nullable|integer|max:150',
-            'active_subscribers_limit' => 'nullable|integer|max:100000',
-        ]);
-
         parent::__construct($attributes);
     }
 

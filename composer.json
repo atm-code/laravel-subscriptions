@@ -41,10 +41,9 @@
         "illuminate/console": "^8.0.0 | ^9.0.0",
         "illuminate/database": "^8.0.0 | ^9.0.0",
         "illuminate/support": "^8.0.0 | ^9.0.0",
-        "rinvex/laravel-support": "*",
         "spatie/eloquent-sortable": "^4.0",
-        "spatie/laravel-sluggable": "^3.3",
-        "spatie/laravel-translatable": "^5.2"
+        "spatie/laravel-translatable": "^6.0",
+        "spatie/laravel-sluggable": "^3.3"
     },
     "require-dev": {
         "codedungeon/phpunit-result-printer": "^0.31.0",
@@ -77,11 +76,5 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true,
-    "repositories": [
-        {
-            "type": "github",
-            "url": "https://github.com/laravel-shift/uniquewith-validator.git"
-        }
-    ]
+    "prefer-stable": true
 }
