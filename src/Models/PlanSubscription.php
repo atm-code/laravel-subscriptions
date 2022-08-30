@@ -480,14 +480,14 @@ class PlanSubscription extends Model
         //$usage = $this->plan->features()->whereSlug($featureSlug)->first()->usage->first();
         $usage = $this->usage()->byFeatureSlug($featureSlug)->first();
 
-        if ($featureValue === 'true') {
-            return true;
-        }
-
-        // added by atm, if there is no usage, it's mean the user can proceed with the action.
-        /*if ($usage === null) {
+        /*if ($featureValue === 'true') {
             return true;
         }*/
+
+        // added by atm, if there is no usage, it's mean the user can proceed with the action.
+        if ($usage === null) {
+            return true;
+        }
 
         // If the feature value is zero, let's return false since
         // there's no uses available. (useful to disable countable features)
