@@ -234,6 +234,8 @@ class PlanSubscription extends Model
 
         if ($immediately) {
             $this->ends_at = $this->canceled_at;
+            // by ATM also cancel the trial, otherwise it's still active!
+            $this->trial_ends_at = $this->canceled_at;
         }
 
         $this->save();
