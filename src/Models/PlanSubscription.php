@@ -477,6 +477,10 @@ class PlanSubscription extends Model
     {
         $featureValue = $this->getFeatureValue($featureSlug);
 
+        if ($featureValue === null) {
+            return false;
+        }
+        
         // todo by ATM
         // get the usage from the plan, so we dont have to make the slug unique, to ease the creation of plans features
         // and make the check dynamic across different plans
