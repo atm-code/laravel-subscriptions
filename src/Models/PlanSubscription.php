@@ -118,7 +118,7 @@ class PlanSubscription extends Model
     /**
      * Create a new Eloquent model instance.
      *
-     * @param  array  $attributes
+     * @param array $attributes
      */
     public function __construct(array $attributes = [])
     {
@@ -225,7 +225,7 @@ class PlanSubscription extends Model
     /**
      * Cancel subscription.
      *
-     * @param  bool  $immediately
+     * @param bool $immediately
      *
      * @return $this
      */
@@ -247,7 +247,7 @@ class PlanSubscription extends Model
     /**
      * Change subscription plan.
      *
-     * @param  \Rinvex\Subscriptions\Models\Plan  $plan
+     * @param \Rinvex\Subscriptions\Models\Plan $plan
      *
      * @return $this
      */
@@ -300,8 +300,8 @@ class PlanSubscription extends Model
     /**
      * Get bookings of the given subscriber.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
-     * @param  \Illuminate\Database\Eloquent\Model  $subscriber
+     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param \Illuminate\Database\Eloquent\Model $subscriber
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -313,8 +313,8 @@ class PlanSubscription extends Model
     /**
      * Scope subscriptions with ending trial.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
-     * @param  int  $dayRange
+     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param int $dayRange
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -329,7 +329,7 @@ class PlanSubscription extends Model
     /**
      * Scope subscriptions with ended trial.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param \Illuminate\Database\Eloquent\Builder $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -341,8 +341,8 @@ class PlanSubscription extends Model
     /**
      * Scope subscriptions with ending periods.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
-     * @param  int  $dayRange
+     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param int $dayRange
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -357,7 +357,7 @@ class PlanSubscription extends Model
     /**
      * Scope subscriptions with ended periods.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param \Illuminate\Database\Eloquent\Builder $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -369,7 +369,7 @@ class PlanSubscription extends Model
     /**
      * Scope all active subscriptions for a user.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param \Illuminate\Database\Eloquent\Builder $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -381,9 +381,9 @@ class PlanSubscription extends Model
     /**
      * Set new subscription period.
      *
-     * @param  string  $invoice_interval
-     * @param  int  $invoice_period
-     * @param  string  $start
+     * @param string $invoice_interval
+     * @param int $invoice_period
+     * @param string $start
      *
      * @return $this
      */
@@ -408,8 +408,8 @@ class PlanSubscription extends Model
     /**
      * Record feature usage.
      *
-     * @param  string  $featureSlug
-     * @param  int  $uses
+     * @param string $featureSlug
+     * @param int $uses
      *
      * @return \Rinvex\Subscriptions\Models\PlanSubscriptionUsage
      */
@@ -446,14 +446,14 @@ class PlanSubscription extends Model
     /**
      * Reduce usage.
      *
-     * @param  string  $featureSlug
-     * @param  int  $uses
+     * @param string $featureSlug
+     * @param int $uses
      *
      * @return \Rinvex\Subscriptions\Models\PlanSubscriptionUsage|null
      */
     public function reduceFeatureUsage(string $featureSlug, int $uses = 1): ?PlanSubscriptionUsage
     {
-        $usage = $this->usage()->byFeatureSlug($featureSlug)->first();
+        $usage = $this->usage()->byFeatureSlug($featureSlug, $this)->first();
 
         if (is_null($usage)) {
             return null;
@@ -469,7 +469,7 @@ class PlanSubscription extends Model
     /**
      * Determine if the feature can be used.
      *
-     * @param  string  $featureSlug
+     * @param string $featureSlug
      *
      * @return bool
      */
@@ -480,11 +480,11 @@ class PlanSubscription extends Model
         if ($featureValue === null) {
             return false;
         }
-        
+
         // todo by ATM
         // get the usage from the plan, so we dont have to make the slug unique, to ease the creation of plans features
         // and make the check dynamic across different plans
-        $usage = $this->plan->features()->whereSlug($featureSlug)->get()->first()->usage->where('subscription_id',$this->id)->first();
+        $usage = $this->plan->features()->whereSlug($featureSlug)->get()->first()->usage->where('subscription_id', $this->id)->first();
         //$usage = $this->plan->features()->whereSlug($featureSlug)->first()->usage->first();
         //$usage = $this->usage()->byFeatureSlug($featureSlug)->first();
 
@@ -510,7 +510,7 @@ class PlanSubscription extends Model
     /**
      * Get how many times the feature has been used.
      *
-     * @param  string  $featureSlug
+     * @param string $featureSlug
      *
      * @return int
      */
@@ -519,7 +519,7 @@ class PlanSubscription extends Model
         // todo by ATM
         // get the usage from the plan, so we dont have to make the slug unique, to ease the creation of plans features
         // and make the check dynamic across different plans
-        $usage = $this->plan->features()->whereSlug($featureSlug)->get()->first()->usage->where('subscription_id',$this->id)->first();
+        $usage = $this->plan->features()->whereSlug($featureSlug)->get()->first()->usage->where('subscription_id', $this->id)->first();
         //$usage = $this->plan->features()->whereSlug($featureSlug)->first()->usage->first();
         //$usage = $this->usage()->byFeatureSlug($featureSlug)->first();
 
@@ -530,7 +530,7 @@ class PlanSubscription extends Model
     {
         // todo by ATM
         $unitPrice = $this->plan->getFeatureBySlug($featureSlug)->price;
-        $usage     = $this->getFeatureUsage($featureSlug);
+        $usage = $this->getFeatureUsage($featureSlug);
 
         return $unitPrice * $usage;
     }
@@ -538,7 +538,7 @@ class PlanSubscription extends Model
     /**
      * Get the available uses.
      *
-     * @param  string  $featureSlug
+     * @param string $featureSlug
      *
      * @return int
      */
@@ -550,7 +550,7 @@ class PlanSubscription extends Model
     /**
      * Get feature value.
      *
-     * @param  string  $featureSlug
+     * @param string $featureSlug
      *
      * @return mixed
      */

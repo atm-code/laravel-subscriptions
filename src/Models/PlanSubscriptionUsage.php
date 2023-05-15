@@ -14,15 +14,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 /**
  * Rinvex\Subscriptions\Models\PlanSubscriptionUsage.
  *
- * @property int                 $id
- * @property int                 $subscription_id
- * @property int                 $feature_id
- * @property int                 $used
+ * @property int $id
+ * @property int $subscription_id
+ * @property int $feature_id
+ * @property int $used
  * @property \Carbon\Carbon|null $valid_until
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property \Carbon\Carbon|null $deleted_at
- * @property-read \Rinvex\Subscriptions\Models\PlanFeature      $feature
+ * @property-read \Rinvex\Subscriptions\Models\PlanFeature $feature
  * @property-read \Rinvex\Subscriptions\Models\PlanSubscription $subscription
  *
  * @method static \Illuminate\Database\Eloquent\Builder|\Rinvex\Subscriptions\Models\PlanSubscriptionUsage byFeatureSlug($featureSlug)
@@ -97,13 +97,17 @@ class PlanSubscriptionUsage extends Model
      * Scope subscription usage by feature slug.
      *
      * @param \Illuminate\Database\Eloquent\Builder $builder
-     * @param string                                $featureSlug
+     * @param string $featureSlug
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeByFeatureSlug(Builder $builder, string $featureSlug): Builder
+    public function scopeByFeatureSlug(Builder $builder, string $featureSlug, $sub = null): Builder
     {
-        $feature = app('rinvex.subscriptions.plan_feature')->where('slug', $featureSlug)->first();
+        if ($sub === null) {
+            $feature = app('rinvex.subscriptions.plan_feature')->where('slug', $featureSlug)->first();
+        } else {
+            $feature = $sub->plan->features->where('slug', $featureSlug)->first();
+        }
 
         return $builder->where('feature_id', $feature ? $feature->getKey() : null);
     }
