@@ -494,7 +494,7 @@ class PlanSubscription extends Model
 
         // added by atm, if there is no usage, it's mean the user can proceed with the action.
         if ($usage === null) {
-            return true;
+            return false;
         }
 
         // If the feature value is zero, let's return false since
